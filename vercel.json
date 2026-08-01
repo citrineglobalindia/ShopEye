@@ -9,8 +9,7 @@
     { "source": "/cart", "destination": "/store/cart.html" },
     { "source": "/checkout", "destination": "/store/checkout.html" },
     { "source": "/confirm", "destination": "/store/confirm.html" },
-    { "source": "/status", "destination": "/index.html" },
-    { "source": "/board", "destination": "/index.html" }
+    { "source": "/board", "destination": "/status.html" }
   ],
   "headers": [
     {
