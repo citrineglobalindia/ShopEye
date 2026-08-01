@@ -8,6 +8,10 @@
     { "source": "/cart", "destination": "/store/cart.html" },
     { "source": "/checkout", "destination": "/store/checkout.html" },
     { "source": "/confirm", "destination": "/store/confirm.html" },
+    { "source": "/account", "destination": "/store/account.html" },
+    { "source": "/wishlist", "destination": "/store/wishlist.html" },
+    { "source": "/sell", "destination": "/store/sell.html" },
+    { "source": "/login", "destination": "/store/login.html" },
     { "source": "/status", "destination": "/status.html" },
     { "source": "/board", "destination": "/status.html" }
   ],
