@@ -28,7 +28,7 @@ a{color:inherit;text-decoration:none}img{display:block;max-width:100%}button{fon
 /* announcement */
 .announce{background:var(--navy);color:#dfe6f5;font-size:12.5px}
 .announce .wrap{display:flex;align-items:center;justify-content:space-between;height:38px}
-.announce .a-left{display:flex;align-items:center;gap:8px;font-weight:500}.announce .a-left b{color:var(--green-l);font-weight:700}
+.announce .a-left{display:flex;align-items:center;gap:8px;font-weight:500;transition:opacity .25s}.announce .a-left b{color:var(--green-l);font-weight:700}
 .announce .a-right{display:flex;align-items:center;gap:18px;color:#aab6d6}.announce .a-right span{cursor:pointer}.announce .a-right span:hover{color:#fff}
 /* header */
 header.site{position:-webkit-sticky;position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .2s}
@@ -168,7 +168,7 @@ footer.site{background:var(--navy);color:#c3cee3;margin-top:56px;padding:52px 0 
     @media(max-width:760px){.authcard{grid-template-columns:1fr}.auth-brand{display:none}.auth-form{padding:28px}}
     </style></head><body>
 <div class="announce"><div class="wrap">
-  <div class="a-left">🚚 Free delivery over <b>₹499</b> · Shop from <b>10,000+</b> verified sellers across India</div>
+  <div class="a-left" id="annMsg">🚚 Free delivery over <b>₹499</b> · Shop from <b>10,000+</b> verified sellers across India</div>
   <div class="a-right"><span onclick="location.href='/sell'">Sell on ShopEye</span><span onclick="location.href='/account'">Track order</span><span onclick="location.href='/account'">Help</span><span>EN · ₹ INR</span></div>
 </div></div>
 <header class="site" id="siteHead">
@@ -334,6 +334,7 @@ function initAC(){var IDX=window.SE_SEARCH||[];
   input.addEventListener('blur',function(){setTimeout(function(){drop.classList.remove('open')},160)});
  });}
 initAC();
+(function(){var am=document.getElementById('annMsg');if(!am)return;var A=['🚚 Free delivery over <b>₹499</b> · Shop from <b>10,000+</b> verified sellers','🎉 Extra <b>10% OFF</b> on UPI payments · use code <b>SHOPEYE10</b>','⚡ Flash Deals are live · up to <b>70% OFF</b> across categories','🎁 <b>₹200 OFF</b> your first order over ₹999 · code <b>NEW200</b>'];var i=0;setInterval(function(){i=(i+1)%A.length;am.style.opacity=0;setTimeout(function(){am.innerHTML=A[i];am.style.opacity=1},250)},4000)})();
 paintCart();paintWish();
 
 var mode='login';
