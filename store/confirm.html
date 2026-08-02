@@ -264,6 +264,16 @@ function wToggle(id){var w=wGet();if(w[id]){delete w[id]}else{w[id]=1}wSet(w);pa
 function wRemove(id){var w=wGet();delete w[id];wSet(w);paintWish()}
 function paintWish(){var n=wCount();document.querySelectorAll('[data-wish]').forEach(function(e){e.textContent=n});
   document.querySelectorAll('.pfav[data-fav]').forEach(function(f){f.classList.toggle('on',wHas(f.getAttribute('data-fav')))});}
+// ---- client-side auth (demo — accounts stored on-device, no server) ----
+function uHash(s){var h=0;s=String(s||'');for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0}return ''+h}
+function uGet(){try{return JSON.parse(localStorage.getItem('se_users')||'{}')}catch(e){return {}}}
+function uSet(o){try{localStorage.setItem('se_users',JSON.stringify(o))}catch(e){}}
+function seSess(r){try{localStorage.setItem('se_profile',JSON.stringify({name:r.name,email:r.email||'',phone:r.phone||'',id:r.id,signed:true}))}catch(e){}}
+function seSignup(idv,name,pass){idv=(idv||'').trim();var k=idv.toLowerCase();var u=uGet();u[k]={name:name||idv.split('@')[0]||'ShopEye User',id:idv,p:uHash(pass),email:idv.indexOf('@')>=0?idv:'',phone:idv.indexOf('@')<0?idv:''};uSet(u);seSess(u[k]);return {ok:true}}
+function seLogin(idv,pass){idv=(idv||'').trim();var u=uGet();var r=u[idv.toLowerCase()];if(!r)return {ok:false,msg:'No account found — please sign up'};if(r.p!==uHash(pass))return {ok:false,msg:'Incorrect password'};seSess(r);return {ok:true}}
+function seSocial(prov,idv,name){var u=uGet();var k=(idv||prov+'-user').toLowerCase();if(!u[k])u[k]={name:name||prov+' User',id:idv||k,p:uHash('social'),email:idv&&idv.indexOf('@')>=0?idv:'',phone:idv&&idv.indexOf('@')<0?idv:''};uSet(u);seSess(u[k]);return {ok:true}}
+function seReset(idv,pass){idv=(idv||'').trim();var k=idv.toLowerCase();var u=uGet();if(!u[k])u[k]={name:idv.split('@')[0]||'User',id:idv,email:idv.indexOf('@')>=0?idv:'',phone:idv.indexOf('@')<0?idv:''};u[k].p=uHash(pass);uSet(u);return {ok:true}}
+function seSignedIn(){try{return !!(JSON.parse(localStorage.getItem('se_profile')||'{}').signed)}catch(e){return false}}
 function toast(msg){var t=document.getElementById('toast');if(!t)return;t.innerHTML='<span class="tk">✓</span> '+msg;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(function(){t.classList.remove('show')},1900)}
 // ---- mobile drawer (right side) ----
 function drawer(v){var d=document.getElementById('mdrawer'),s=document.getElementById('mdScrim');if(!d)return;d.classList.toggle('open',v);s.classList.toggle('open',v);document.body.style.overflow=v?'hidden':''}

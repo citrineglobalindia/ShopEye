@@ -164,6 +164,7 @@ footer.site{background:var(--navy);color:#c3cee3;margin-top:56px;padding:52px 0 
     .auth-or{display:flex;align-items:center;gap:12px;color:var(--muted-2);font-size:12px;margin:18px 0}
     .auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--line)}
     .social{display:flex;gap:10px}.social button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:11px;font-family:var(--head);font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}.social button:hover{border-color:var(--teal)}
+    #otpPanel{display:none}.auth-form.otp-mode>*{display:none}.auth-form.otp-mode #otpPanel{display:block}
     @media(max-width:760px){.authcard{grid-template-columns:1fr}.auth-brand{display:none}.auth-form{padding:28px}}
     </style></head><body>
 <div class="announce"><div class="wrap">
@@ -238,8 +239,13 @@ footer.site{background:var(--navy);color:#c3cee3;margin-top:56px;padding:52px 0 
     </form>
     <div style="text-align:right;margin-top:8px"><a href="/forgot" style="font-size:12.5px;color:var(--teal-d);font-weight:600">Forgot password?</a></div>
     <div class="auth-or">or continue with</div>
-    <div class="social"><button onclick="toast('Google sign-in (demo)')">G · Google</button><button onclick="toast('OTP sent (demo)')">📱 Mobile OTP</button></div>
+    <div class="social"><button onclick="seSocial('Google');toast('Signed in with Google');setTimeout(function(){location.href='/account'},700)">G · Google</button><button onclick="otpMode(true)">📱 Mobile OTP</button></div>
     <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:16px">By continuing you agree to ShopEye's Terms &amp; Privacy.</p>
+    <div id="otpPanel">
+      <button onclick="otpMode(false)" style="background:none;border:none;color:var(--teal);font-weight:700;font-family:var(--head);font-size:13px;cursor:pointer;padding:0">← Back to login options</button>
+      <div id="otpStep1"><h2 style="font-size:20px;font-weight:800;margin:12px 0 4px">Login with OTP</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">We'll send a one-time code to your mobile.</p><div class="fld"><label>Mobile number</label><input id="otpMob" inputmode="tel" placeholder="+91 98765 43210"></div><button class="btn btn-primary block" onclick="sendOtp()">Send OTP</button></div>
+      <div id="otpStep2" style="display:none"><h2 style="font-size:20px;font-weight:800;margin:12px 0 4px">Enter the code</h2><p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Sent to <b id="otpTo"></b> · demo code <b id="otpCode" style="color:var(--teal-d)"></b></p><div class="fld"><input id="otpVal" inputmode="numeric" maxlength="6" placeholder="000000" style="letter-spacing:6px;text-align:center;font-size:20px;font-weight:700"></div><button class="btn btn-primary block" onclick="verifyOtp()">Verify &amp; login</button></div>
+    </div>
   </div>
 </div></div>
 
@@ -282,6 +288,16 @@ function wToggle(id){var w=wGet();if(w[id]){delete w[id]}else{w[id]=1}wSet(w);pa
 function wRemove(id){var w=wGet();delete w[id];wSet(w);paintWish()}
 function paintWish(){var n=wCount();document.querySelectorAll('[data-wish]').forEach(function(e){e.textContent=n});
   document.querySelectorAll('.pfav[data-fav]').forEach(function(f){f.classList.toggle('on',wHas(f.getAttribute('data-fav')))});}
+// ---- client-side auth (demo — accounts stored on-device, no server) ----
+function uHash(s){var h=0;s=String(s||'');for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0}return ''+h}
+function uGet(){try{return JSON.parse(localStorage.getItem('se_users')||'{}')}catch(e){return {}}}
+function uSet(o){try{localStorage.setItem('se_users',JSON.stringify(o))}catch(e){}}
+function seSess(r){try{localStorage.setItem('se_profile',JSON.stringify({name:r.name,email:r.email||'',phone:r.phone||'',id:r.id,signed:true}))}catch(e){}}
+function seSignup(idv,name,pass){idv=(idv||'').trim();var k=idv.toLowerCase();var u=uGet();u[k]={name:name||idv.split('@')[0]||'ShopEye User',id:idv,p:uHash(pass),email:idv.indexOf('@')>=0?idv:'',phone:idv.indexOf('@')<0?idv:''};uSet(u);seSess(u[k]);return {ok:true}}
+function seLogin(idv,pass){idv=(idv||'').trim();var u=uGet();var r=u[idv.toLowerCase()];if(!r)return {ok:false,msg:'No account found — please sign up'};if(r.p!==uHash(pass))return {ok:false,msg:'Incorrect password'};seSess(r);return {ok:true}}
+function seSocial(prov,idv,name){var u=uGet();var k=(idv||prov+'-user').toLowerCase();if(!u[k])u[k]={name:name||prov+' User',id:idv||k,p:uHash('social'),email:idv&&idv.indexOf('@')>=0?idv:'',phone:idv&&idv.indexOf('@')<0?idv:''};uSet(u);seSess(u[k]);return {ok:true}}
+function seReset(idv,pass){idv=(idv||'').trim();var k=idv.toLowerCase();var u=uGet();if(!u[k])u[k]={name:idv.split('@')[0]||'User',id:idv,email:idv.indexOf('@')>=0?idv:'',phone:idv.indexOf('@')<0?idv:''};u[k].p=uHash(pass);uSet(u);return {ok:true}}
+function seSignedIn(){try{return !!(JSON.parse(localStorage.getItem('se_profile')||'{}').signed)}catch(e){return false}}
 function toast(msg){var t=document.getElementById('toast');if(!t)return;t.innerHTML='<span class="tk">✓</span> '+msg;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(function(){t.classList.remove('show')},1900)}
 // ---- mobile drawer (right side) ----
 function drawer(v){var d=document.getElementById('mdrawer'),s=document.getElementById('mdScrim');if(!d)return;d.classList.toggle('open',v);s.classList.toggle('open',v);document.body.style.overflow=v?'hidden':''}
@@ -323,6 +339,12 @@ paintCart();paintWish();
 var mode='login';
 document.getElementById('tabLogin').onclick=function(){mode='login';this.classList.add('on');document.getElementById('tabSignup').classList.remove('on');document.getElementById('nameFld').style.display='none';document.getElementById('authBtn').textContent='Login';};
 document.getElementById('tabSignup').onclick=function(){mode='signup';this.classList.add('on');document.getElementById('tabLogin').classList.remove('on');document.getElementById('nameFld').style.display='';document.getElementById('authBtn').textContent='Create account';};
-function doAuth(e){e.preventDefault();var inps=document.querySelectorAll('.auth-form input');var em=inps[mode==='signup'?1:0].value||'';var nm=(document.getElementById('nameFld').querySelector('input').value)||(em.split('@')[0])||'ShopEye User';try{localStorage.setItem('se_profile',JSON.stringify({name:(mode==='signup'?nm:(em.split('@')[0]||'ShopEye User')),email:em.indexOf('@')>=0?em:'',phone:em.indexOf('@')<0?em:'',signed:true}))}catch(x){}toast(mode==='login'?'Signed in (demo)':'Account created (demo)');setTimeout(function(){location.href='/account'},900);return false;}
+function doAuth(e){e.preventDefault();var em=document.querySelector('#authForm input[type=text]').value;var pw=document.querySelector('#authForm input[type=password]').value;var nm=document.getElementById('nameFld').querySelector('input').value;if(!em||!pw){toast('Enter your details');return false;}var r=mode==='signup'?seSignup(em,nm,pw):seLogin(em,pw);if(!r.ok){toast(r.msg);return false;}toast(mode==='login'?'Signed in':'Account created');setTimeout(function(){location.href='/account'},700);return false;}
 window.doAuth=doAuth;
+function otpMode(v){document.querySelector('.auth-form').classList.toggle('otp-mode',v);document.getElementById('otpStep1').style.display=v?'':'none';document.getElementById('otpStep2').style.display='none';}
+window.otpMode=otpMode;
+var _otp='';
+function sendOtp(){var m=(document.getElementById('otpMob').value||'').trim();if(m.replace(/\D/g,'').length<10){toast('Enter a valid mobile number');return;}_otp=''+Math.floor(100000+Math.random()*900000);document.getElementById('otpTo').textContent=m;document.getElementById('otpCode').textContent=_otp;document.getElementById('otpStep1').style.display='none';document.getElementById('otpStep2').style.display='';document.getElementById('otpVal').focus();}
+function verifyOtp(){var v=(document.getElementById('otpVal').value||'').trim();if(v!==_otp){toast('Incorrect OTP');return;}seSocial('Mobile',document.getElementById('otpMob').value.trim());toast('Signed in');setTimeout(function(){location.href='/account'},700);}
+window.sendOtp=sendOtp;window.verifyOtp=verifyOtp;
 </script></body></html>
