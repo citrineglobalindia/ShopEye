@@ -12,6 +12,7 @@
     { "source": "/wishlist", "destination": "/store/wishlist.html" },
     { "source": "/sell", "destination": "/store/sell.html" },
     { "source": "/login", "destination": "/store/login.html" },
+    { "source": "/forgot", "destination": "/store/forgot.html" },
     { "source": "/privacy", "destination": "/store/privacy.html" },
     { "source": "/terms", "destination": "/store/terms.html" },
     { "source": "/returns", "destination": "/store/returns.html" },
