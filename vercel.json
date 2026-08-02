@@ -14,6 +14,8 @@
     { "source": "/rent-dress", "destination": "/store/rent-dress.html" },
     { "source": "/rent-laptop", "destination": "/store/rent-laptop.html" },
     { "source": "/meat", "destination": "/store/meat.html" },
+    { "source": "/rent-furniture", "destination": "/store/rent-furniture.html" },
+    { "source": "/custom", "destination": "/store/custom.html" },
     { "source": "/login", "destination": "/store/login.html" },
     { "source": "/forgot", "destination": "/store/forgot.html" },
     { "source": "/privacy", "destination": "/store/privacy.html" },
