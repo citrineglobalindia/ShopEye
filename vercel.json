@@ -11,6 +11,7 @@
     { "source": "/account", "destination": "/store/account.html" },
     { "source": "/wishlist", "destination": "/store/wishlist.html" },
     { "source": "/sell", "destination": "/store/sell.html" },
+    { "source": "/seller", "destination": "/store/seller.html" },
     { "source": "/rent-dress", "destination": "/store/rent-dress.html" },
     { "source": "/rent-laptop", "destination": "/store/rent-laptop.html" },
     { "source": "/meat", "destination": "/store/meat.html" },
